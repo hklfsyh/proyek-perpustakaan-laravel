@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -21,6 +21,14 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Aturan 1: 'manage-users' -> hanya user dengan role 'admin' yang lolos.
+        Gate::define('manage-users', function ($user) {
+            return $user->role == 'admin';
+        });
+
+        // Aturan 2: 'manage-library' -> hanya user dengan role 'admin' atau 'librarian' yang lolos.
+        Gate::define('manage-library', function ($user) {
+            return in_array($user->role, ['admin', 'librarian']);
+        });
     }
 }

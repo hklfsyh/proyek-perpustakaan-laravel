@@ -7,26 +7,35 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class BookController extends Controller
 {
-    /**
-     * Menampilkan halaman utama manajemen buku.
-     */
+    // Fungsi ini sekarang dipakai oleh SEMUA role untuk menampilkan view dan data AJAX
     public function index(Request $request): View|JsonResponse
     {
         if ($request->ajax()) {
-            $books = Book::with('categories')->latest()->get();
+            $books = Book::with(['categories', 'loans' => fn($q) => $q->whereNull('returned_at')])->latest()->get();
             return DataTables::of($books)
                 ->addIndexColumn()
-                ->addColumn('categories', function ($book) {
-                    return $book->categories->pluck('name')->implode(', ');
-                })
+                ->addColumn('categories', fn($b) => $b->categories->pluck('name')->implode(', '))
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="javascript:void(0)" data-toggle="tooltip" data-id="' . $row->id . '" data-original-title="Edit" class="edit btn btn-primary btn-sm editBook">Edit</a>';
-                    $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-id="' . $row->id . '" data-original-title="Delete" class="btn btn-danger btn-sm deleteBook">Delete</a>';
-                    return $btn;
+                    if (Auth::check()) {
+                        $user = Auth::user();
+                        if ($user->role == 'admin' || $user->role == 'librarian') {
+                            $btn = '<a href="javascript:void(0)" data-id="' . $row->id . '" class="edit btn btn-primary btn-sm editBook">Edit</a>';
+                            $btn .= ' <a href="javascript:void(0)" data-id="' . $row->id . '" class="btn btn-danger btn-sm deleteBook">Delete</a>';
+                            return $btn;
+                        } elseif ($user->role == 'member') {
+                            if ($row->loans->isNotEmpty()) {
+                                return '<span class="badge bg-secondary">Dipinjam</span>';
+                            }
+                            return '<a href="javascript:void(0)" data-id="' . $row->id . '" class="btn btn-success btn-sm borrowBook">Pinjam</a>';
+                        }
+                    }
+                    // Jika guest, tampilkan tombol login
+                    return '<a href="' . route('login') . '" class="btn btn-outline-primary btn-sm">Login untuk Pinjam</a>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -34,6 +43,16 @@ class BookController extends Controller
 
         $categories = Category::all();
         return view('books.index', compact('categories'));
+    }
+
+    // Fungsi BARU: Hanya untuk menyediakan data publik tanpa tombol aksi
+    public function catalogData(Request $request): JsonResponse
+    {
+        $books = Book::with('categories')->latest()->get();
+        return DataTables::of($books)
+            ->addIndexColumn()
+            ->addColumn('categories', fn($b) => $b->categories->pluck('name')->implode(', '))
+            ->make(true);
     }
 
     /**

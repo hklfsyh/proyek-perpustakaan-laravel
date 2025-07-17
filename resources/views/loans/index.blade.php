@@ -6,21 +6,62 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body>
+<body
+    data-can-manage-library="{{ auth()->check() && (auth()->user()->role == 'admin' || auth()->user()->role == 'librarian') ? 'true' : 'false' }}">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Perpustakaan App</a>
+            <a class="navbar-brand" href="{{ route('catalog.index') }}">Perpustakaan App</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('categories.index') }}">Kategori</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('books.index') }}">Buku</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('users.index') }}">Pengguna</a></li>
-                    <li class="nav-item"><a class="nav-link active" aria-current="page"
-                            href="{{ route('loans.index') }}">Peminjaman</a></li>
-                </ul>
+                @auth
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        @if(Auth::user()->role == 'admin' || Auth::user()->role == 'librarian')
+                            <li class="nav-item"><a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}"
+                                    href="{{ route('categories.index') }}">Kategori</a></li>
+                            <li class="nav-item"><a class="nav-link {{ request()->is('/') ? 'active' : '' }}"
+                                    href="{{ route('catalog.index') }}">Buku</a></li>
+                            <li class="nav-item"><a class="nav-link {{ request()->routeIs('loans.*') ? 'active' : '' }}"
+                                    href="{{ route('loans.index') }}">Peminjaman</a></li>
+                        @endif
+                        @if(Auth::user()->role == 'admin')
+                            <li class="nav-item"><a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}"
+                                    href="{{ route('users.index') }}">Pengguna</a></li>
+                        @endif
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ Auth::user()->name }} ({{ ucfirst(Auth::user()->role) }})
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <a class="dropdown-item" href="{{ route('logout') }}"
+                                            onclick="event.preventDefault(); this.closest('form').submit();">Log Out</a>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                @else
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">Log in</a></li>
+                        <li class="nav-item"><a href="{{ route('register') }}" class="nav-link">Register</a></li>
+                    </ul>
+                @endauth
             </div>
         </div>
     </nav>
@@ -62,7 +103,6 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="form-group mb-3">
                             <label for="member_id" class="control-label">Anggota Peminjam</label>
                             <select name="member_id" id="member_id" class="form-control" required>
@@ -72,7 +112,6 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="form-group mb-3">
                             <label for="librarian_id" class="control-label">Petugas</label>
                             <select name="librarian_id" id="librarian_id" class="form-control" required>
@@ -82,12 +121,10 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="form-group mb-3">
                             <label for="note" class="control-label">Catatan</label>
                             <textarea name="note" id="note" class="form-control"></textarea>
                         </div>
-
                         <div class="col-sm-offset-2 col-sm-10 mt-3">
                             <button type="submit" class="btn btn-primary" id="saveBtn">Simpan</button>
                         </div>
@@ -138,10 +175,17 @@
                         $('#loanForm').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         table.draw();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.success,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                         $('#saveBtn').html('Simpan');
                     },
                     error: function (data) {
-                        alert('Error: ' + data.responseJSON.message);
+                        Swal.fire('Error!', data.responseJSON.message, 'error');
                         $('#saveBtn').html('Simpan');
                     }
                 });
@@ -149,28 +193,54 @@
 
             $('body').on('click', '.returnLoan', function () {
                 var loan_id = $(this).data("id");
-                if (confirm("Konfirmasi pengembalian buku?")) {
-                    $.ajax({
-                        type: "PUT", // Perhatikan tipe method adalah PUT
-                        url: "/loans/" + loan_id + "/return", // URL ke route custom kita
-                        success: function (data) {
-                            table.draw();
-                        },
-                        error: function (data) { console.log('Error:', data); }
-                    });
-                }
+                Swal.fire({
+                    title: 'Konfirmasi Pengembalian',
+                    text: "Anda yakin buku ini sudah dikembalikan?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Sudah Kembali!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "PUT",
+                            url: "/loans/" + loan_id + "/return",
+                            success: (data) => {
+                                table.draw();
+                                Swal.fire('Berhasil!', 'Buku telah ditandai kembali.', 'success');
+                            },
+                            error: (data) => Swal.fire('Error!', 'Gagal memproses pengembalian.', 'error')
+                        });
+                    }
+                });
             });
 
             $('body').on('click', '.deleteLoan', function () {
                 var loan_id = $(this).data("id");
-                if (confirm("Yakin ingin menghapus data peminjaman ini?")) {
-                    $.ajax({
-                        type: "DELETE",
-                        url: "{{ route('loans.store') }}" + '/' + loan_id,
-                        success: function (data) { table.draw(); },
-                        error: function (data) { console.log('Error:', data); }
-                    });
-                }
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data peminjaman ini akan dihapus permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "DELETE",
+                            url: "{{ route('loans.store') }}" + '/' + loan_id,
+                            success: (data) => {
+                                table.draw();
+                                Swal.fire('Dihapus!', 'Data peminjaman telah dihapus.', 'success');
+                            },
+                            error: (data) => Swal.fire('Error!', 'Gagal menghapus data.', 'error')
+                        });
+                    }
+                });
             });
         });
     </script>

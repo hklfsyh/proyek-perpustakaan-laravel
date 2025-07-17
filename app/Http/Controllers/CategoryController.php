@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse; // <-- TAMBAHKAN INI
-use Illuminate\View\View;         // <-- TAMBAHKAN INI
+use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Gate;
 
 
 class CategoryController extends Controller
@@ -17,6 +18,10 @@ class CategoryController extends Controller
     // Kita beritahu function ini bisa mengembalikan salah satu dari dua tipe
     public function index(Request $request): View|JsonResponse
     {
+        if (!Gate::allows('manage-library')) {
+            abort(403);
+        }
+
         if ($request->ajax()) {
             $data = Category::latest()->get();
             return DataTables::of($data)
@@ -39,6 +44,10 @@ class CategoryController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        if (!Gate::allows('manage-library')) {
+            abort(403);
+        }
+
         Category::updateOrCreate(
             ['id' => $request->category_id],
             ['name' => $request->name]
@@ -52,6 +61,10 @@ class CategoryController extends Controller
      */
     public function edit($id): JsonResponse
     {
+        if (!Gate::allows('manage-library')) {
+            abort(403);
+        }
+
         $category = Category::find($id);
         return response()->json($category);
     }
@@ -61,6 +74,10 @@ class CategoryController extends Controller
      */
     public function destroy($id): JsonResponse
     {
+        if (!Gate::allows('manage-library')) {
+            abort(403);
+        }
+
         Category::find($id)->delete();
 
         return response()->json(['success' => 'Category deleted successfully.']);

@@ -8,11 +8,16 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
     public function index(Request $request): View|JsonResponse
     {
+        if (!Gate::allows('manage-users')) {
+            abort(403);
+        }
+
         if ($request->ajax()) {
             $users = User::latest()->get();
             return DataTables::of($users)
@@ -31,6 +36,10 @@ class UserController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (!Gate::allows('manage-users')) {
+            abort(403);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $request->user_id,
@@ -57,12 +66,20 @@ class UserController extends Controller
 
     public function edit($id): JsonResponse
     {
+        if (!Gate::allows('manage-users')) {
+            abort(403);
+        }
+
         $user = User::find($id);
         return response()->json($user);
     }
 
     public function destroy($id): JsonResponse
     {
+        if (!Gate::allows('manage-users')) {
+            abort(403);
+        }
+
         User::find($id)->delete();
         return response()->json(['success' => 'User deleted successfully.']);
     }
