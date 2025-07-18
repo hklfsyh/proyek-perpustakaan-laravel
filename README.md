@@ -6,13 +6,6 @@
 
 ---
 
-### ✨ Demo Singkat
-*[Saran: Ganti gambar di bawah ini dengan screenshot atau GIF demo aplikasi Anda yang sedang berjalan]*
-
-![Demo Aplikasi Perpustakaan](https://user-images.githubusercontent.com/username/repo/path-to-your-image.gif)
-
----
-
 ## 🚀 Fitur Utama
 
 -   **Manajemen Data (CRUD):**
