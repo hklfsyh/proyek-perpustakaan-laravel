@@ -1,66 +1,117 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 Aplikasi Manajemen Perpustakaan (Full-Stack)
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <em>Sebuah aplikasi web full-stack untuk manajemen perpustakaan yang dibangun dari nol sebagai bagian dari tes seleksi. Aplikasi ini mencakup fungsionalitas CRUD yang lengkap, sistem autentikasi, serta hak akses berbasis peran untuk Admin, Pustakawan, dan Anggota.</em>
 </p>
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### ✨ Demo Singkat
+*[Saran: Ganti gambar di bawah ini dengan screenshot atau GIF demo aplikasi Anda yang sedang berjalan]*
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+![Demo Aplikasi Perpustakaan](https://user-images.githubusercontent.com/username/repo/path-to-your-image.gif)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🚀 Fitur Utama
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   **Manajemen Data (CRUD):**
+    -   ✅ CRUD **Kategori** Buku.
+    -   ✅ CRUD **Katalog Buku** dengan relasi *many-to-many* (satu buku bisa memiliki banyak kategori).
+    -   ✅ CRUD **Pengguna** dengan 3 peran berbeda (Admin, Pustakawan, Anggota).
+    -   ✅ CRUD **Peminjaman** Buku, lengkap dengan fitur pengembalian.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   **Autentikasi & Otorisasi:**
+    -   ✅ Halaman Login & Registrasi yang aman menggunakan **Laravel Breeze**.
+    -   ✅ Proteksi halaman (middleware) untuk memastikan hanya pengguna terautentikasi yang dapat mengakses data manajemen.
+    -   ✅ **Hak Akses Dinamis** berdasarkan 3 peran.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+-   **Fitur Pengguna & UX:**
+    -   ✅ **Katalog Publik** untuk pengunjung (*guest*).
+    -   ✅ **Peminjaman Mandiri** untuk Anggota.
+    -   ✅ Tampilan menu dan tombol yang adaptif sesuai peran pengguna.
 
-## Laravel Sponsors
+-   **Antarmuka Modern:**
+    -   ✅ Operasi data **tanpa *refresh*** halaman (AJAX).
+    -   ✅ Tabel interaktif dengan pencarian, urutan, dan paginasi *server-side* (**DataTables**).
+    -   ✅ Notifikasi *pop-up* yang indah dan informatif (**SweetAlert2**).
+    -   ✅ *Dropdown* multi-pilih yang canggih untuk kategori buku (**Select2**).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🛠️ Teknologi yang Digunakan
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+-   **Backend**: Laravel
+-   **Frontend**: Bootstrap 5, jQuery, AJAX
+-   **Database**: MySQL
+-   **Tooling**: Vite, Composer, NPM
+-   **Paket Utama**:
+    -   `laravel/breeze` (Autentikasi)
+    -   `yajra/laravel-datatables` (Tabel Data)
+    -   `sweetalert2` (Notifikasi)
+    -   `select2` (Dropdown)
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## ⚙️ Panduan Instalasi & Setup
 
-## Code of Conduct
+Untuk menjalankan proyek ini di lingkungan lokal:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1.  **Clone repositori ini:**
+    ```bash
+    git clone [https://github.com/NAMA_USER_ANDA/NAMA_REPO_ANDA.git](https://github.com/NAMA_USER_ANDA/NAMA_REPO_ANDA.git)
+    cd NAMA_REPO_ANDA
+    ```
 
-## Security Vulnerabilities
+2.  **Instal dependensi PHP:**
+    ```bash
+    composer install
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3.  **Salin dan konfigurasi file environment:**
+    ```bash
+    cp .env.example .env
+    ```
+    Buka file `.env` dan sesuaikan pengaturan database Anda (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
 
-## License
+4.  **Generate application key:**
+    ```bash
+    php artisan key:generate
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5.  **Jalankan migrasi dan seeder:**
+    Perintah ini akan menghapus semua tabel dan mengisinya dengan 3 akun pengguna default (Admin, Librarian, Member).
+    **Peringatan: Perintah ini akan menghapus semua data yang ada di database.**
+    ```bash
+    php artisan migrate:fresh --seed
+    ```
+
+6.  **Instal dependensi JavaScript:**
+    ```bash
+    npm install
+    ```
+
+7.  **Jalankan Vite development server:**
+    Buka satu terminal dan biarkan perintah ini tetap berjalan.
+    ```bash
+    npm run dev
+    ```
+
+8.  **Jalankan server Laravel:**
+    Buka terminal **baru** dan jalankan perintah ini.
+    ```bash
+    php artisan serve
+    ```
+    Buka aplikasi di browser pada alamat `http://127.0.0.1:8000`.
+
+---
+
+## 👤 Akun Demo
+
+Anda dapat menggunakan akun berikut untuk menguji aplikasi dengan berbagai hak akses:
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Admin** | `admin@perpustakaan.app` | `password` |
+| **Librarian** | `librarian@perpustakaan.app` | `password` |
+| **Member** | `member@perpustakaan.app` | `password` |
